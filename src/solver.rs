@@ -54,7 +54,7 @@ impl NaiveSolver {
                 match ty {
                     CharCheck::GuessedExact => self.chooser.add_wanted_at_pos(i, *ch),
                     CharCheck::GuessedWrongPlace => self.chooser.add_wanted_not_at_pos(i, *ch),
-                    CharCheck::NotGuessed => {}
+                    CharCheck::NotGuessed => self.chooser.add_except(*ch),
                 }
             }
             remained_words = self.chooser.choose(remained_words);
