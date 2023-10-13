@@ -52,8 +52,8 @@ impl NaiveSolver {
             }
             for (i, (ch, ty)) in (&check).iter().enumerate() {
                 match ty {
-                    CharCheck::GuessedExact => self.chooser.add_exact(i, *ch),
-                    CharCheck::GuessedWrongPlace => self.chooser.add_wanted(*ch),
+                    CharCheck::GuessedExact => self.chooser.add_wanted_at_pos(i, *ch),
+                    CharCheck::GuessedWrongPlace => self.chooser.add_wanted_not_at_pos(i, *ch),
                     CharCheck::NotGuessed => {}
                 }
             }
@@ -65,40 +65,43 @@ impl NaiveSolver {
 
 struct WordsChooser {
     /// usize = position
-    exact: HashMap<usize, char>,
-    wanted: HashSet<char>,
+    wanted_at_pos: HashMap<usize, char>,
+
+    /// usize = position not wanted
+    wanted_not_at_pos: HashMap<usize, char>,
+
     except: HashSet<char>,
 }
 
 impl WordsChooser {
     pub fn new() -> Self {
         Self {
-            exact: HashMap::new(),
-            wanted: HashSet::new(),
+            wanted_at_pos: HashMap::new(),
+            wanted_not_at_pos: HashMap::new(),
+            // wanted: HashSet::new(),
             except: HashSet::new(),
         }
     }
 
-    pub fn add_exact(&mut self, pos: usize, ch: char) {
-        self.exact.insert(pos, ch);
+    pub fn add_wanted_at_pos(&mut self, pos: usize, ch: char) {
+        self.wanted_at_pos.insert(pos, ch);
         self.except.remove(&ch);
     }
 
-    pub fn add_wanted(&mut self, ch: char) {
-        self.wanted.insert(ch);
+    pub fn add_wanted_not_at_pos(&mut self, pos: usize, ch: char) {
+        self.wanted_not_at_pos.insert(pos, ch);
         self.except.remove(&ch);
     }
 
     pub fn add_except(&mut self, ch: char) {
         let keys_to_remove: Vec<_> = self
-            .exact
+            .wanted_at_pos
             .iter()
             .filter_map(|(&k, &v)| if v == ch { Some(k) } else { None })
             .collect();
         for k in keys_to_remove {
-            self.exact.remove(&k);
+            self.wanted_at_pos.remove(&k);
         }
-        self.wanted.remove(&ch);
         self.except.insert(ch);
     }
 
@@ -107,13 +110,13 @@ impl WordsChooser {
             .iter()
             .filter(|x| {
                 let chars: Vec<_> = x.chars().collect();
-                for (&i, &ch) in &self.exact {
+                for (&i, &ch) in &self.wanted_at_pos {
                     if chars[i] != ch {
                         return false;
                     }
                 }
-                for wanted in &self.wanted {
-                    if !chars.contains(&wanted) {
+                for (&i, &ch) in &self.wanted_not_at_pos {
+                    if chars[i] == ch {
                         return false;
                     }
                 }
