@@ -20,6 +20,11 @@ impl WordCheck {
     pub fn word(&self) -> String {
         self.0.iter().map(|(c, _)| c).collect()
     }
+
+    pub fn is_solved(&self) -> bool {
+        self.iter()
+            .all(|(_, ty)| matches!(ty, CharCheck::GuessedExact))
+    }
 }
 
 impl Deref for WordCheck {
@@ -85,6 +90,10 @@ impl Puzzle {
             word_check.push((w, char_check));
         }
         Ok(word_check)
+    }
+
+    pub fn len(&self) -> usize {
+        self.word.chars().count()
     }
 }
 
