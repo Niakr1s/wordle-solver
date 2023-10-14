@@ -25,6 +25,18 @@ impl Words {
     pub fn get_freqs(&self) -> &HashMap<char, usize> {
         &self.freqs
     }
+
+    pub fn freq(&self, word: &str) -> usize {
+        word.chars()
+            .fold(0, |acc, c| acc + self.freqs.get(&c).copied().unwrap_or(0))
+    }
+
+    pub fn unique_freq(&self, word: &str) -> usize {
+        word.chars()
+            .collect::<HashSet<_>>()
+            .into_iter()
+            .fold(0, |acc, c| acc + self.freqs.get(&c).copied().unwrap_or(0))
+    }
 }
 
 pub struct Dictionary {
@@ -99,5 +111,37 @@ mod test_dictionary_builder {
         assert_eq!(dic.words_by_len.get(&3).unwrap().get_words().len(), 2);
         assert!(dic.get(3).unwrap().get_words().contains("abc"));
         assert!(dic.get(3).unwrap().get_words().contains("def"));
+    }
+}
+
+#[cfg(test)]
+mod test_words {
+    use super::*;
+
+    #[test]
+    fn test_new_builds_correct_frequency() {
+        let words = HashSet::from_iter(["abc", "aab", "aba"].into_iter().map(str::to_owned));
+        let words = Words::new(words);
+        assert_eq!(words.freqs.get(&'a'), Some(&5));
+        assert_eq!(words.freqs.get(&'b'), Some(&3));
+        assert_eq!(words.freqs.get(&'c'), Some(&1));
+    }
+
+    #[test]
+    fn test_freq() {
+        let words = HashSet::from_iter(["abc", "aab", "aba"].into_iter().map(str::to_owned));
+        let words = Words::new(words);
+        assert_eq!(words.freq("abc"), 9);
+        assert_eq!(words.freq("aaa"), 15);
+        assert_eq!(words.freq("ddd"), 0);
+    }
+
+    #[test]
+    fn test_unique_freq() {
+        let words = HashSet::from_iter(["abc", "aab", "aba"].into_iter().map(str::to_owned));
+        let words = Words::new(words);
+        assert_eq!(words.unique_freq("abc"), 9);
+        assert_eq!(words.unique_freq("aaa"), 5);
+        assert_eq!(words.unique_freq("ddd"), 0);
     }
 }
