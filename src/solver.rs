@@ -37,8 +37,6 @@ impl NaiveSolver {
         let mut chooser = WordsChooser::new();
 
         for i in 1.. {
-            println!("NaiveSolver: iteration #{i}");
-
             let word = remained_words
                 .iter()
                 .choose(&mut rng)
@@ -46,6 +44,7 @@ impl NaiveSolver {
 
             let check: WordCheck = puzzle.check_word(&word)?;
             if check.is_solved() {
+                println!("NaiveSolver: solved in {} tries", i);
                 return Ok(check.word());
             }
             for (i, (ch, ty)) in (&check).iter().enumerate() {
