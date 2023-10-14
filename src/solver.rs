@@ -55,7 +55,7 @@ impl NaiveSolver {
                     CharCheck::NotGuessed => chooser.add_except(*ch),
                 }
             }
-            remained_words = chooser.choose(remained_words);
+            remained_words = chooser.filter(remained_words);
         }
         Err(SolveError::SolutionNotFound)
     }
@@ -103,7 +103,7 @@ impl WordsChooser {
         self.except.insert(ch);
     }
 
-    pub fn choose<'a>(&self, words: HashSet<&'a String>) -> HashSet<&'a String> {
+    pub fn filter<'a>(&self, words: HashSet<&'a String>) -> HashSet<&'a String> {
         words
             .iter()
             .filter(|x| {
