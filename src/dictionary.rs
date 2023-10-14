@@ -55,6 +55,7 @@ impl Dictionary {
         Dictionary { words_by_len }
     }
 
+    /// Returns [Words]. Every word in returned [Words] has the same length.
     pub fn get(&self, length: usize) -> Option<&Words> {
         self.words_by_len.get(&length)
     }
