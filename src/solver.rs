@@ -20,15 +20,11 @@ impl From<CheckWordError> for SolveError {
     }
 }
 
-pub struct NaiveSolver {
-    chooser: WordsChooser,
-}
+pub struct NaiveSolver;
 
 impl NaiveSolver {
     pub fn new() -> Self {
-        Self {
-            chooser: WordsChooser::new(),
-        }
+        Self {}
     }
 
     pub fn solve(&mut self, puzzle: &Puzzle, dict: &Dictionary) -> Result<String, SolveError> {
@@ -37,6 +33,8 @@ impl NaiveSolver {
         let mut rng = thread_rng();
 
         let mut remained_words: HashSet<&String> = words.get_words().iter().collect();
+
+        let mut chooser = WordsChooser::new();
 
         for i in 1.. {
             println!("NaiveSolver: iteration #{i}");
@@ -52,12 +50,12 @@ impl NaiveSolver {
             }
             for (i, (ch, ty)) in (&check).iter().enumerate() {
                 match ty {
-                    CharCheck::GuessedExact => self.chooser.add_wanted_at_pos(i, *ch),
-                    CharCheck::GuessedWrongPlace => self.chooser.add_wanted_not_at_pos(i, *ch),
-                    CharCheck::NotGuessed => self.chooser.add_except(*ch),
+                    CharCheck::GuessedExact => chooser.add_wanted_at_pos(i, *ch),
+                    CharCheck::GuessedWrongPlace => chooser.add_wanted_not_at_pos(i, *ch),
+                    CharCheck::NotGuessed => chooser.add_except(*ch),
                 }
             }
-            remained_words = self.chooser.choose(remained_words);
+            remained_words = chooser.choose(remained_words);
         }
         Err(SolveError::SolutionNotFound)
     }
