@@ -100,13 +100,11 @@ impl Puzzle {
 #[cfg(test)]
 mod test_puzzle {
     use super::*;
-    use crate::dictionary::*;
 
     const WORDS: &[&str; 4] = &["def", "asd", "abc", "xyz"];
 
-    fn make_dic(words: &[&str]) -> DictionaryBuildResult {
-        let builder = DictionaryBuilder;
-        builder.from_vec(words.into_iter().map(|&s| s.to_owned()).collect())
+    fn make_dic(words: &[&str]) -> Dictionary {
+        Dictionary::new(words.into_iter().map(|&s| s.to_owned()).collect())
     }
 
     #[test]
@@ -189,7 +187,7 @@ mod test_puzzle {
 
     #[test]
     fn test_new_is_random() {
-        let dic = make_dic(WORDS).unwrap();
+        let dic = make_dic(WORDS);
 
         for _ in 0.. {
             let puzzle1 = Puzzle::new(3, &dic).unwrap();
