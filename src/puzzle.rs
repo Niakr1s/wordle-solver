@@ -59,9 +59,10 @@ pub struct Puzzle {
 
 impl Puzzle {
     pub fn new(length: usize, dic: &Dictionary) -> Result<Puzzle, NewPuzzleError> {
-        let words = dic.get_words(length).ok_or(NewPuzzleError::Empty)?;
+        let words = dic.get(length).ok_or(NewPuzzleError::Empty)?;
         let mut rng = thread_rng();
         let word = words
+            .get_words()
             .iter()
             .choose(&mut rng)
             .ok_or(NewPuzzleError::Empty)?

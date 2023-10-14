@@ -33,10 +33,10 @@ impl NaiveSolver {
 
     pub fn solve(&mut self, puzzle: &Puzzle, dict: &Dictionary) -> Result<String, SolveError> {
         let len = puzzle.len();
-        let words = dict.get_words(len).ok_or(SolveError::EmptyDictionary)?;
+        let words = dict.get(len).ok_or(SolveError::EmptyDictionary)?;
         let mut rng = thread_rng();
 
-        let mut remained_words: HashSet<&String> = words.iter().collect();
+        let mut remained_words: HashSet<&String> = words.get_words().iter().collect();
 
         for i in 1.. {
             println!("NaiveSolver: iteration #{i}");
