@@ -4,8 +4,8 @@ use std::ops::{Deref, DerefMut};
 use crate::dictionary::Dictionary;
 
 #[derive(Debug)]
-pub enum NewPuzzleError {
-    Empty,
+pub enum PuzzleError {
+    NoWordsForLen(usize),
 }
 
 #[derive(Debug)]
@@ -58,14 +58,14 @@ pub struct Puzzle {
 }
 
 impl Puzzle {
-    pub fn new(length: usize, dic: &Dictionary) -> Result<Puzzle, NewPuzzleError> {
-        let words = dic.get(length).ok_or(NewPuzzleError::Empty)?;
+    pub fn new(length: usize, dic: &Dictionary) -> Result<Puzzle, PuzzleError> {
+        let words = dic.get(length).ok_or(PuzzleError::NoWordsForLen(length))?;
         let mut rng = thread_rng();
         let word = words
             .get_words()
             .iter()
             .choose(&mut rng)
-            .ok_or(NewPuzzleError::Empty)?
+            .ok_or(PuzzleError::NoWordsForLen(length))?
             .clone();
         Ok(Puzzle { word })
     }
